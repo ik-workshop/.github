@@ -24,7 +24,8 @@ const repo = [
   'ivankatliarchuk/.github',
   'ivankatliarchuk/ivankatliarchuk.github.io',
   'ivankatliarchuk/knowledge-base',
-  'ivankatliarchuk/dotfiles'
+  'ivankatliarchuk/dotfiles',
+  'cloudkats/docker-tools'
 ]
 
 module.exports = {
@@ -40,12 +41,7 @@ module.exports = {
   "printConfig": false,
   "pruneStaleBranches": false,
   "username": "ivankatliarchuk",
-  "repositories": [
-    "ivankatliarchuk/.github",
-    "ivankatliarchuk/ivankatliarchuk.github.io",
-    "ivankatliarchuk/knowledge-base",
-    "ivankatliarchuk/dotfiles"
-  ],
+  "repositories": repo,
   "prHourlyLimit": 20,
   "stabilityDays": 3,
   "semanticCommits": "enabled",
@@ -154,6 +150,54 @@ module.exports = {
       ],
       "matchStrings": ["uses: (?<depName>.*?)@(?<currentValue>.*?)\n"],
       "datasourceTemplate": "github-releases"
+    },
+    {
+      fileMatch: [
+        '^Dockerfile$',
+        "Dockerfile$",
+      ],
+      matchStrings: [
+        '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s(ARG|ENV) .*?_VERSION(=|\\s)(?<currentValue>.*)\\s'
+      ],
+      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}'
+    },
+    {
+      "fileMatch": [
+        "^Dockerfile$",
+        "Dockerfile$",
+        "(^|/|\\.)Dockerfile$",
+        "(^|/)Dockerfile\\.[^/]*$"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*depName=(?<depName>.*?)?\\s.*?:\\s(?<currentValue>.*)\\s"
+      ],
+      "versioningTemplate": "semver",
+      "datasourceTemplate": "github-releases",
+      "lookupNameTemplate": "{{{depName}}}"
+    },
+    {
+      "fileMatch": [
+        "Dockerfile$",
+        "^Dockerfile$",
+        "(^|/|\\.)Dockerfile$",
+        "(^|/)Dockerfile\\.[^/]*$"
+      ],
+      "matchStrings": [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=(?<currentValue>.*)\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "fileMatch": [
+        "Dockerfile$",
+        "(^|/|\\.)Dockerfile$",
+        "(^|/)Dockerfile\\.[^/]*$"
+      ],
+      "matchStrings": [
+        "ARG IMAGE=(?<depName>.*?):(?<currentValue>.*?)@(?<currentDigest>sha256:[a-f0-9]+)s"
+      ],
+      "datasourceTemplate": "docker"
     }
   ]
 };
