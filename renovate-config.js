@@ -7,7 +7,7 @@ const dry_run = process.env.DRY_RUN || false
 console.log(`DRY_RUN mode: ${dry_run}`);
 
 if (!process.env.DOCKER_HUB_PASSWORD) {
-  throw new Error('DOCKER_HUB_PASSWORD must be set');
+  throw new Error('"DOCKER_HUB_PASSWORD" must be set');
 }
 
 const repo1 = [
@@ -17,8 +17,8 @@ const repo1 = [
 ]
 
 const repo = [
-  'ivankatliarchuk/.github',
-  'cloudkats/docker-tools'
+  "ivankatliarchuk/.github",
+  "cloudkats/docker-tools"
 ]
 
 module.exports = {
@@ -33,26 +33,28 @@ module.exports = {
   "logLevel": "debug",
   "assigneesFromCodeOwners": true,
   "assignees": ["ivankatliarchuk"],
-  "labels": ["renovate", "dependencies", "automated"],
   "dependencyDashboardTitle": "Dependency Dashboard self-hosted",
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
-  "onboarding": true,
-  "dryRun": false,
+  "onboarding": false,
+  "dryRun": true,
   "printConfig": false,
   "pruneStaleBranches": true,
+  "rebaseWhen": "behind-base-branch",
   "username": "ivankatliarchuk",
+  // "repositories": JSON.parse(Fs.readFileSync(process.env.RENOVATE_REPOSITORY_CONFIG_FILE, 'utf8')),
   "repositories": repo,
   "prHourlyLimit": 50,
   "stabilityDays": 3,
   "semanticCommits": "enabled",
   "onboardingConfig": { "extends": ["github>ivankatliarchuk/.github"] },
-  "major": { "automerge": false, "labels": ["dependencies", "major"] },
-  "minor": { "automerge": false, "labels": ["dependencies", "minor"] },
-  "patch": { "automerge": false },
+  // "major": { "automerge": false, "labels": ["dependencies", "major"] },
+  // "minor": { "automerge": false, "labels": ["dependencies", "minor"] },
+  // "patch": { "automerge": false },
   // cache +
-  "cacheDir": process.env.RENOVATE_CACHE_DIR,
-  "repositoryCache": (process.env.RENOVATE_CACHE_DIR ? true : false),
+  // "cacheDir": process.env.RENOVATE_CACHE_DIR,
+  // "repositoryCache": (process.env.RENOVATE_CACHE_DIR ? true : false),
   // cache -
+  "labels": ["renovate", "dependencies", "automated"],
   "hostRules": [
     {
       "hostType": 'docker',

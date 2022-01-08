@@ -5,7 +5,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 export DRY_RUN ?= true
-CI_RENOVATE_IMAGE ?= renovate/renovate:31.10.0
+CI_RENOVATE_IMAGE ?= renovate/renovate:31.14-slim
 export RENOVATE_TOKEN ?= $(shell envchain vars env | grep RENOVATE_TOKEN | tr "=" " " |  awk '{print $$2}')
 export DOCKER_HUB_PASSWORD ?= $(shell envchain vars env | grep DOCKER_HUB_PASSWORD | tr "=" " " |  awk '{print $$2}')
 
@@ -24,6 +24,7 @@ validate: ## Validate files with pre-commit hooks
 set-token: ## Set tokens for local development
 	@envchain --set vars RENOVATE_TOKEN
 
+PHONY: renovate
 renovate: ## Run renovate
 	@docker run --rm -it \
 	-v ${PWD}/.github/renovate/renovate-config.js:/github-action/renovate-config.js -w /tmp \
@@ -33,6 +34,5 @@ renovate: ## Run renovate
 	-e RENOVATE_CACHE_DIR=/github-action/cache \
 	-e RENOVATE_TOKEN \
 	-e DOCKER_HUB_PASSWORD \
-  -e DRY_RUN \
 	-e LOG_LEVEL=info \
-	${CI_RENOVATE_IMAGE}
+	${CI_RENOVATE_IMAGE} --dry-run=true

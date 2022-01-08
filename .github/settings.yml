@@ -34,7 +34,7 @@ branches:
       strict: true
       contexts: []
     enforce_admins: true
-- name: test-settings
+
 
 # Labels: define labels for Issues and Pull Requests
 # https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md
@@ -97,6 +97,9 @@ labels:
 - name: dependencies
   color: 0366d6
   description: A PR that updates dependencies - used by Release Drafter
+- name: renovate
+  color: dd42f5
+  description: Universal dependency update tool that fits into your workflows
 - name: release
   color: 640910
   description: A release
@@ -377,3 +380,12 @@ labels:
   color: 8a3b94
 - name: 'area/security'
   color: 32a6a8
+
+# renovate
+- name: 'renovate'
+  color: b134eb
+  description: Universal dependency update tool
+
+- name: 'docker'
+  color: 34d5eb
+  description: Docker is a set of platform as a service products that use OS-level virtualization
