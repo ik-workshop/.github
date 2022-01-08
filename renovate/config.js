@@ -108,23 +108,14 @@ module.exports = {
       "matchPackagePatterns": [".*"],
       "addLabels": ["{{depType}}", "{{datasource}}", "{{updateType}}"]
     },
+    {
+      "matchManagers": ["*"],
+      "addLabels": ["{{depType}}", "{{datasource}}", "{{updateType}}"]
+    },
 
     // legacy
 
-    { "matchPackagePatterns": ["*"] },
-    { "groupName": "dependencies", "matchDepTypes": ["dependencies"] },
-    { "groupName": "devDependencies", "matchDepTypes": ["devDependencies"] },
-    {
-      "groupName": "devDependencies(non-major)",
-      "matchDepTypes": ["devDependencies(non-major)"]
-    },
-    {
-      "labels": ["renovate/image-release", "dependency/major"],
-      "enabled": true,
-      "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["major"],
-      "groupName": "docker"
-    },
+    { "matchPackagePatterns": ["*"], "addLabels": ["{{depType}}", "{{datasource}}", "{{updateType}}"] },
     {
       "versioning": "regex:^v(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?",
       "groupName": "actions",
@@ -133,7 +124,8 @@ module.exports = {
     {
       "enabled": true,
       "groupName": "actions",
-      "matchManagers": ["github-actions"]
+      "matchManagers": ["github-actions"],
+      "addLabels": ["{{depType}}", "{{datasource}}", "{{updateType}}"]
     },
     {
       "versioning": "semver",
