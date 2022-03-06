@@ -15,12 +15,12 @@ jobs:
     steps:
 
       - name: checkout code
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3.0.0
         with:
           fetch-depth: '1'
           submodules: 'recursive'
 
       - name: check if merge was approved by code owner
-        uses: orta/code-owner-self-merge@1.6.4
+        uses: orta/code-owner-self-merge@1.6.5
         env:
           GITHUB_TOKEN: ${{  secrets.GITHUB_TOKEN }}

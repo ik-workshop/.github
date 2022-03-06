@@ -3,6 +3,12 @@
   "cloudkats/docker-tools",
   "ivankatliarchuk/ivankatliarchuk",
   "ivankatliarchuk/ivankatliarchuk.github.io",
+  "ivankatliarchuk/dotfiles",
   "ivankatliarchuk/knowledge-base",
-  "ik-workshop/workshop-blueprint"
+  "ik-workshop/workshop-blueprint",
+  "terraform-module/terraform-aws-enforce-mfa",
+  "terraform-module/terraform-module-blueprint",
+  "terraform-module/terraform-aws-kms",
+  "terraform-module/terraform-aws-eks-fargate-profile",
+  "terraform-module/terraform-aws-cloudfront-s3"
 ]
