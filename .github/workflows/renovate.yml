@@ -42,7 +42,7 @@ jobs:
 
       # https://github.com/renovatebot/github-action install renovate app
       - name: execute-dependency-update
-        uses: renovatebot/github-action@v32.0.1
+        uses: renovatebot/github-action@v32.2.0
         with:
           configurationFile: ${{ env.RENOVATE_CONFIG_FOLDER }}/config.js
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -53,14 +53,3 @@ jobs:
           LOG_LEVEL: info
           RENOVATE_REPOSITORIES: ${{ steps.prepare.outputs.repositories }}
           RENOVATE_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dryrun || 'false' }}
-
-#  INFO: Dependency extraction complete (repository=ivankatliarchuk/dotfiles)
-#        "baseBranch": "master",
-#        "stats": {
-#          "managers": {
-#            "github-actions": {"fileCount": 4, "depCount": 8},
-#            "pip_requirements": {"fileCount": 1, "depCount": 2}
-#          },
-#          "total": {"fileCount": 5, "depCount": 10}
-#        }
-
