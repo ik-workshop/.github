@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'ivankatliarchuk/.github'
     steps:
-      - uses: actions/checkout@v3.0.0
+      - uses: actions/checkout@v3.0.1
         with:
           fetch-depth: '1'
 
@@ -42,7 +42,7 @@ jobs:
 
       # https://github.com/renovatebot/github-action install renovate app
       - name: execute-dependency-update
-        uses: renovatebot/github-action@v32.6.7
+        uses: renovatebot/github-action@v32.26.0
         with:
           configurationFile: ${{ env.RENOVATE_CONFIG_FOLDER }}/config.js
           token: ${{ secrets.RENOVATE_TOKEN }}

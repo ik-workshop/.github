@@ -2,6 +2,7 @@
 // https://github.com/renovatebot/github-action/blob/main/.github/renovate.json
 // https://docs.renovatebot.com/configuration-options/
 
+const fs = require('fs');
 const dry_run = process.env.RENOVATE_DRY_RUN
 console.log(`DRY_RUN mode: ${dry_run}`);
 
@@ -11,21 +12,23 @@ module.exports = {
   "extends": [":disableRateLimiting", ":semanticCommits"],
   "assigneesFromCodeOwners": true,
   "assignees": ["ivankatliarchuk"],
-  "labels": ["renovate", "dependencies"],
   "dependencyDashboardTitle": "Dependency Dashboard self-hosted",
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
   "onboarding": true,
   "platform": "github",
   "dryRun": dry_run,
-  // "repositories": ["cloudkats/docker-tools"],
+  // "repositories": JSON.parse(fs.readFileSync('/ren/repositories.json', 'utf8')),
   "printConfig": false,
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
+  "stabilityDays": 3,
   "pruneStaleBranches": true,
   "recreateClosed": true,
+  "dependencyDashboard": false,
+  "requireConfig": false,
   "rebaseWhen": "behind-base-branch",
   "baseBranches": ["master", "main"],
   "username": "ivankatliarchuk",
-  "prHourlyLimit": 20,
-  "stabilityDays": 3,
   "semanticCommits": "enabled",
   "onboardingConfig": { "extends": ["github>ivankatliarchuk/.github"] },
   "hostRules": [
@@ -37,19 +40,14 @@ module.exports = {
   ],
   "git-submodules": {
     "enabled": true
-    },
+  },
+  "labels": ["renovate", "dependencies"],
   "packageRules": [
     // labels section --> start
     {
-      "addLabels": ["renovate"]
-    },
-    {
-      "matchDatasources": ["git-refs", "github-tags"],
-      "addLabels": ["{{updateType}}"]
-    },
-    {
       "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
-      "addLabels": ["{{datasource}}", "{{updateType}}"]
+      "addLabels": ["{{depType}}", "{{datasource}}", "{{updateType}}"],
+      "commitMessageSuffix": '({{packageFile}})'
     },
     { "addLabels": ["php"], "matchLanguages": ["php"] },
     { "addLabels": ["js"], "matchLanguages": ["js"] },
@@ -114,17 +112,7 @@ module.exports = {
       "matchPackagePatterns": [".*"],
       "addLabels": ["{{datasource}}", "{{updateType}}"]
     },
-    {
-      "matchManagers": ["*"],
-      "addLabels": ["{{datasource}}", "{{updateType}}"]
-    },
-    {
-      "matchManagers": ["regex"],
-      "addLabels": ["{{datasource}}", "{{updateType}}"]
-    },
-
     // legacy
-
     {
       "versioning": "regex:^v(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?",
       "groupName": "actions",
@@ -140,7 +128,6 @@ module.exports = {
       "versioning": "semver",
       "matchDatasources": "go",
       "matchManagers": ["gomod"],
-      "matchUpdateTypes": ["pin", "digest"],
       "addLabels": ["{{datasource}}", "{{updateType}}", "go"]
     }
   ],
@@ -245,12 +232,7 @@ module.exports = {
       "lookupNameTemplate": "{{{depName}}}"
     },
     {
-      "fileMatch": [
-        "Dockerfile$",
-        "^Dockerfile$",
-        "(^|/|\\.)Dockerfile$",
-        "(^|/)Dockerfile\\.[^/]*$"
-      ],
+      "fileMatch": [".*"],
       "matchStrings": [
         "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=(?<currentValue>.*)\\s"
       ],
@@ -258,15 +240,22 @@ module.exports = {
       "datasourceTemplate": "github-releases"
     },
     {
-      "fileMatch": [
-        "Dockerfile$",
-        "(^|/|\\.)Dockerfile$",
-        "(^|/)Dockerfile\\.[^/]*$"
-      ],
+      "fileMatch": [ ".*" ],
       "matchStrings": [
         "ARG IMAGE=(?<depName>.*?):(?<currentValue>.*?)@(?<currentDigest>sha256:[a-f0-9]+)s"
       ],
       "datasourceTemplate": "docker"
-    }
+    },
+    {
+      "description": "Update docker references in Makefile",
+      "fileMatch": [
+        "Makefile$"
+      ],
+      "matchStrings": [
+        "CI_RENOVATE_IMAGE\\s*:=\\s*(?<depName>renovate\\/renovate):(?<currentValue>[a-z0-9.-]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
   ]
 };
