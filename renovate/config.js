@@ -45,7 +45,7 @@ module.exports = {
   "pre-commit": {
     "enabled": true
   },
-  "labels": ["renovate", "deps"],
+  "labels": ["renovate", "deps", "{{depType}}", "datasource::{{datasource}}", "type::{{updateType}}", "manager:{{manager}}"]
   "vulnerabilityAlerts": {
     "enabled": true,
     "addLabels": ["vulnerability"]
@@ -55,17 +55,18 @@ module.exports = {
     // labels section --> start
     {
       "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
-      "addLabels": ["{{depType}}", "{{datasource}}", "{{updateType}}"],
+      "addLabels": ["rule::1"],
       "commitMessageSuffix": '({{packageFile}})'
     },
     { "addLabels": ["php"], "matchLanguages": ["php"] },
     { "addLabels": ["js"], "matchLanguages": ["js"] },
-    { "addLabels": ["python"], "matchLanguages": ["python"] },
+    { "addLabels": ["python", "rule::2"], "matchLanguages": ["python"] },
     // labels section --> end
     {
       "description": "Disables the creation of branches/PRs for any minor/patch updates etc. of python version",
       "matchFiles": [".*python-version"],
       "matchUpdateTypes": ["minor", "major"],
+      "addLabels": ["rule::3"],
       "enabled": false
     },
     {
@@ -75,7 +76,8 @@ module.exports = {
       "separateMinorPatch": true,
       "matchDatasources": ["docker"],
       "separateMultipleMajor": true,
-      "groupName": "{{packageFile}}",
+      "groupName": "{{datasource}}",
+      "addLabels": ["rule::4"],
       "addLabels": ["{{datasource}}", "{{updateType}}"]
     },
     {
@@ -86,7 +88,11 @@ module.exports = {
       "separateMinorPatch": true,
       "separateMultipleMajor": true,
       "groupName": "{{datasource}} {{depType}} {{packageFile}}",
-      "addLabels": ["{{datasource}}", "{{updateType}}"]
+      "addLabels": ["rule::4", "github-action"]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "addLabels": ["rule::4.1", "github-action"]
     },
     {
       "automerge": false,
@@ -95,7 +101,7 @@ module.exports = {
       "matchManagers": ["terraform", "terraform-version"],
       "matchPackagePatterns": [".*"],
       "groupName": "{{datasource}} {{depType}} {{packageFile}}",
-      "addLabels": ["{{datasource}}", "{{updateType}}"]
+      "addLabels": ["rule::6"]
     },
     {
       "commitMessageTopic": "Helm chart {{depName}}",
@@ -103,7 +109,7 @@ module.exports = {
       "separateMinorPatch": false,
       "matchDatasources": ["helm"],
       "groupName": "{{datasource}} {{depType}} {{packageFile}}",
-      "addLabels": ["{{datasource}}", "{{updateType}}"]
+      "addLabels": ["rule::7"]
     },
     {
       "separateMajorMinor": false,
@@ -119,27 +125,34 @@ module.exports = {
         "setup-cfg"
       ],
       "matchPackagePatterns": [".*"],
-      "addLabels": ["{{datasource}}", "{{updateType}}"]
+      "addLabels": ["rule::8"]
+    },
+    {
+      "groupName": "pre-commit",
+      "matchManagers": ["pre-commit"],
+      "addLabels": ["rule::10", "pre-commit"]
     },
     // legacy
     {
       "versioning": "regex:^v(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?",
       "groupName": "actions",
-      "matchPackageNames": ["actions/*"]
+      "matchPackageNames": ["actions/*"],
+      "addLabels": ["rule::4.2", "github-action"]
     },
     {
       "versioning": "semver",
       "matchDatasources": "go",
       "matchManagers": ["gomod"],
-      "addLabels": ["{{datasource}}", "{{updateType}}", "go"]
+      "addLabels": ["rule::9", "go"]
     },
     {
       "matchPackageNames": ["kubernetes/kubernetes"],
       "allowedVersions": "< 2"
     }
   ],
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": [
         "Dockerfile$",
         "^Dockerfile$",
@@ -153,6 +166,7 @@ module.exports = {
       "extractVersionTemplate": "^v?(?<version>.*)$"
     },
     {
+      "customType": "regex",
       "fileMatch": [".*"],
       "matchStrings": [
         "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION=(?<currentValue>.*)\\s"
@@ -162,6 +176,7 @@ module.exports = {
       "extractVersionTemplate": "^v?(?<version>.*)$"
     },
     {
+      "customType": "regex",
       "fileMatch": [".*"],
       "matchStrings": [
         "ARG IMAGE=(?<depName>.*?):(?<currentValue>.*?)@(?<currentDigest>sha256:[a-f0-9]+)s"
@@ -169,6 +184,7 @@ module.exports = {
       "datasourceTemplate": "docker"
     },
     {
+      "customType": "regex",
       "fileMatch": [".*"],
       "matchStrings": [
         "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION=(?<currentValue>.*)\\s"
@@ -178,6 +194,7 @@ module.exports = {
       "extractVersionTemplate": "^v?(?<version>.*)$"
     },
     {
+      "customType": "regex",
       "fileMatch": [".*"],
       "matchStrings": [
         "datasource=(?<datasource>.*?) depName=(?<depName>kubernetes\\/kubectl)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION=(?<currentValue>.*)\\s"
@@ -187,6 +204,7 @@ module.exports = {
       "depNameTemplate": "kubernetes/kubernetes"
     },
     {
+      "customType": "regex",
       // TODO: validate why is not working correctly
       "fileMatch": [
         "(^workflow-templates|.github/workflows)\/[^/]+\.ya?ml$",
@@ -197,6 +215,7 @@ module.exports = {
     },
     // legacy
     {
+      "customType": "regex",
       "fileMatch": ["\\.yaml$"],
       "matchStrings": [
         "registryUrl=(?<registryUrl>.*?)\n *chart: (?<depName>.*?)\n *version: (?<currentValue>.*)\n"
@@ -204,11 +223,13 @@ module.exports = {
       "datasourceTemplate": "helm"
     },
     {
+      "customType": "regex",
       "fileMatch": ["sample.yml"],
       "matchStrings": ["version: (?<depName>.*?)@(?<currentValue>.*?)\n"],
       "datasourceTemplate": "github-tags"
     },
     {
+      "customType": "regex",
       "fileMatch": ["versions.yml"],
       "matchStrings": [
         "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\n.*?_version: (?<currentValue>.*)\n"
@@ -216,6 +237,7 @@ module.exports = {
       "versioningTemplate": "{{#if versioning}}{{versioning}}{{else}}semver{{/if}}"
     },
     {
+      "customType": "regex",
       "fileMatch": [
         ".github/workflows/blank.yml",
         ".github/workflows/takeover-output.yml"
@@ -224,6 +246,7 @@ module.exports = {
       "datasourceTemplate": "github-releases"
     },
     {
+      "customType": "regex",
       fileMatch: [
         "^Dockerfile$",
         "Dockerfile$",
@@ -234,6 +257,7 @@ module.exports = {
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
     },
     {
+      "customType": "regex",
       "fileMatch": [
         "^Dockerfile$",
         "Dockerfile$",
@@ -248,6 +272,7 @@ module.exports = {
       "lookupNameTemplate": "{{{depName}}}"
     },
     {
+      "customType": "regex",
       "fileMatch": [".*"],
       "matchStrings": [
         "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=(?<currentValue>.*)\\s"
@@ -256,6 +281,7 @@ module.exports = {
       "datasourceTemplate": "github-releases"
     },
     {
+      "customType": "regex",
       "fileMatch": [".*"],
       "matchStrings": [
         "ARG IMAGE=(?<depName>.*?):(?<currentValue>.*?)@(?<currentDigest>sha256:[a-f0-9]+)s"
@@ -263,6 +289,7 @@ module.exports = {
       "datasourceTemplate": "docker"
     },
     {
+      "customType": "regex",
       "description": "Update docker references in Makefile",
       "fileMatch": [
         "Makefile$"
