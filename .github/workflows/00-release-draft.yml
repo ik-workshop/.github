@@ -1,4 +1,4 @@
-name: release.draft
+name: 00-release-draft
 
 on:
   push:
@@ -24,6 +24,10 @@ on:
         - 'patch'
         - 'minor'
         - 'major'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   draft-a-release:
