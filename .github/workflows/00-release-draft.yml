@@ -34,12 +34,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: '0'
 
       - name: check next version
-        uses: anothrNick/github-tag-action@1.71.0
+        uses: anothrNick/github-tag-action@1.73.0
         id: tag
         env:
           DRY_RUN: true
@@ -47,7 +47,7 @@ jobs:
           DEFAULT_BUMP: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.bump || 'patch' }}
 
       - name: release-draft
-        uses: release-drafter/release-drafter@v6.0.0
+        uses: release-drafter/release-drafter@v6.2.0
         if: "!contains(github.event.head_commit.message, 'skip')"
         # contains(github.event.head_commit.message, 'release')
         id: release
